@@ -1,10 +1,19 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
+from fastapi import Request
 from fastapi.responses import JSONResponse
-import order_helper
-import session_helper
-
+import db_helper
+import generic_helper
 
 app = FastAPI()
+print("✅ FastAPI app loaded successfully!")
+
+
+@app.get("/")
+def read_root():
+    print("🌐 Root route was hit")
+    return {"message": "FastAPI is working 🚀"}
+
+
 
 inprogress_orders = {}
 
@@ -19,30 +28,27 @@ async def handle_request(request: Request):
     intent = payload['queryResult']['intent']['displayName']
     parameters = payload['queryResult']['parameters']
     output_contexts = payload['queryResult']['outputContexts']
-    session_id = session_helper.extract_session_id(output_contexts[0]["name"])
+    session_id = generic_helper.extract_session_id(output_contexts[0]["name"])
 
     intent_handler_dict = {
-        'order.add-context:ongoing-order': add_to_order,
-        'order.remove -context:ongoing-order': remove_from_order,
-        'order.complete-context:ongoing-order': complete_order,
-        'track.order': track_order,
-        'track.order-context:ongoing-order': track_order  # ✅ Add this line
+        'order.add - context: ongoing-order': add_to_order,
+        'order.remove - context: ongoing-order': remove_from_order,
+        'order.complete - context: ongoing-order': complete_order,
+        'track.order - context: ongoing-order': track_order  # ✅ this line is correct
     }
 
     if intent in intent_handler_dict:
         return intent_handler_dict[intent](parameters, session_id)
     else:
-        return JSONResponse(content={
-            "fulfillmentText": f"❌ Unknown intent received: {intent}"
-        })
+        return JSONResponse(content={"fulfillmentText": f"❌ Unknown intent: {intent}"})
 
 
 def save_to_db(order: dict):
-    next_order_id = order_helper.get_next_order_id()
+    next_order_id = db_helper.get_next_order_id()
 
     # Insert individual items along with quantity in orders table
     for food_item, quantity in order.items():
-        rcode = order_helper.insert_order_item(
+        rcode = db_helper.insert_order_item(
             food_item,
             quantity,
             next_order_id
@@ -52,7 +58,7 @@ def save_to_db(order: dict):
             return -1
 
     # Now insert order tracking status
-    order_helper.insert_order_tracking(next_order_id, "in progress")
+    db_helper.insert_order_tracking(next_order_id, "in progress")
 
     return next_order_id
 
@@ -67,7 +73,7 @@ def complete_order(parameters: dict, session_id: str):
             fulfillment_text = "Sorry, I couldn't process your order due to a backend error. " \
                                "Please place a new order again"
         else:
-            order_total = order_helper.get_total_order_price(order_id)
+            order_total = db_helper.get_total_order_price(order_id)
 
             fulfillment_text = f"Awesome. We have placed your order. " \
                                f"Here is your order id # {order_id}. " \
@@ -96,8 +102,8 @@ def add_to_order(parameters: dict, session_id: str):
         else:
             inprogress_orders[session_id] = new_food_dict
 
-        order_str = session_helper.get_str_from_food_dict(inprogress_orders[session_id])
-        fulfillment_text = f"Till now you have: {order_str}. Do you need anything else?"
+        order_str = generic_helper.get_str_from_food_dict(inprogress_orders[session_id])
+        fulfillment_text = f"So far you have: {order_str}. Do you need anything else?"
 
     return JSONResponse(content={
         "fulfillmentText": fulfillment_text
@@ -132,7 +138,7 @@ def remove_from_order(parameters: dict, session_id: str):
     if len(current_order.keys()) == 0:
         fulfillment_text += " Your order is empty!"
     else:
-        order_str = session_helper.get_str_from_food_dict(current_order)
+        order_str = generic_helper.get_str_from_food_dict(current_order)
         fulfillment_text += f" Here is what is left in your order: {order_str}"
 
     return JSONResponse(content={
@@ -142,7 +148,7 @@ def remove_from_order(parameters: dict, session_id: str):
 
 def track_order(parameters: dict, session_id: str):
     order_id = int(parameters['number'])
-    order_status = order_helper.get_order_status(order_id)
+    order_status = db_helper.get_order_status(order_id)
     if order_status:
         fulfillment_text = f"The order status for order id: {order_id} is: {order_status}"
     else:
@@ -151,3 +157,5 @@ def track_order(parameters: dict, session_id: str):
     return JSONResponse(content={
         "fulfillmentText": fulfillment_text
     })
+
+
