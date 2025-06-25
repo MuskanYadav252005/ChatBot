@@ -29,10 +29,10 @@ This project implements a food ordering chatbot backend using FastAPI, connected
 - MySQL (optional for full DB functionality)
 - Install dependencies:
 
-```bash
-pip install fastapi uvicorn
-How to Run
+
+
 1. Clone the Repository
+
 git clone https://github.com/MuskanYadav252005/ChatBot
 cd ChatBot/backend
 
