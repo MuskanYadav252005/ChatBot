@@ -5,13 +5,13 @@ import db_helper
 import generic_helper
 
 app = FastAPI()
-print("✅ FastAPI app loaded successfully!")
+print(" FastAPI app loaded successfully!")
 
 
 @app.get("/")
 def read_root():
-    print("🌐 Root route was hit")
-    return {"message": "FastAPI is working 🚀"}
+    print("Root route was hit")
+    return {"message": "FastAPI is working "}
 
 
 
@@ -34,7 +34,7 @@ async def handle_request(request: Request):
         'order.add - context: ongoing-order': add_to_order,
         'order.remove - context: ongoing-order': remove_from_order,
         'order.complete - context: ongoing-order': complete_order,
-        'track.order - context: ongoing-order': track_order  # ✅ this line is correct
+        'track.order - context: ongoing-order': track_order  
     }
 
     if intent in intent_handler_dict:
@@ -82,7 +82,7 @@ def complete_order(parameters: dict, session_id: str):
                                    f"Here is your order id # {order_id}. " \
                                    f"Your order total is {order_total} which you can pay at the time of delivery!"
             except Exception as e:
-                print("⚠ ERROR getting order total:", e)
+                print("ERROR getting order total:", e)
                 fulfillment_text = f"Order placed (ID: {order_id}), but I couldn't calculate the total."
 
         del inprogress_orders[session_id]
