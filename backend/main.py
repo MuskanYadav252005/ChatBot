@@ -10,7 +10,7 @@ print(" FastAPI app loaded successfully!")
 
 @app.get("/")
 def read_root():
-    print("Root route was hit")
+    print(" Root route was hit")
     return {"message": "FastAPI is working "}
 
 
@@ -20,11 +20,10 @@ inprogress_orders = {}
 
 @app.post("/")
 async def handle_request(request: Request):
-    # Retrieve the JSON data from the request
+
     payload = await request.json()
 
-    # Extract the necessary information from the payload
-    # based on the structure of the WebhookRequest from Dialogflow
+
     intent = payload['queryResult']['intent']['displayName']
     parameters = payload['queryResult']['parameters']
     output_contexts = payload['queryResult']['outputContexts']
@@ -34,31 +33,30 @@ async def handle_request(request: Request):
         'order.add - context: ongoing-order': add_to_order,
         'order.remove - context: ongoing-order': remove_from_order,
         'order.complete - context: ongoing-order': complete_order,
-        'track.order - context: ongoing-order': track_order  
+        'track.order - context: ongoing-order': track_order,
+        'feedback.intent': handle_feedback
     }
+
 
     if intent in intent_handler_dict:
         return intent_handler_dict[intent](parameters, session_id)
     else:
-        return JSONResponse(content={"fulfillmentText": f"❌ Unknown intent: {intent}"})
-
+        return JSONResponse(content={"fulfillmentText": f" Unknown intent: {intent}"})
 
 def save_to_db(order: dict):
     next_order_id = db_helper.get_next_order_id()
+    print(" Next Order ID:", next_order_id)
 
-    # Insert individual items along with quantity in orders table
     for food_item, quantity in order.items():
-        rcode = db_helper.insert_order_item(
-            food_item,
-            quantity,
-            next_order_id
-        )
+        print(f"Inserting {food_item} x{quantity}")
+        rcode = db_helper.insert_order_item(food_item, quantity, next_order_id)
 
         if rcode == -1:
+            print(" Error inserting", food_item)
             return -1
 
-    # Now insert order tracking status
     db_helper.insert_order_tracking(next_order_id, "in progress")
+    print(" Order tracking inserted for", next_order_id)
 
     return next_order_id
 
@@ -82,7 +80,7 @@ def complete_order(parameters: dict, session_id: str):
                                    f"Here is your order id # {order_id}. " \
                                    f"Your order total is {order_total} which you can pay at the time of delivery!"
             except Exception as e:
-                print("ERROR getting order total:", e)
+                print("⚠ ERROR getting order total:", e)
                 fulfillment_text = f"Order placed (ID: {order_id}), but I couldn't calculate the total."
 
         del inprogress_orders[session_id]
@@ -163,6 +161,4 @@ def track_order(parameters: dict, session_id: str):
 
     return JSONResponse(content={
         "fulfillmentText": fulfillment_text
-    })
-
-
+    }
