@@ -1,2 +1,6 @@
-mysql-connector-python
 fastapi[all]
+uvicorn
+mysql-connector-python
+python-dotenv
+google-cloud-dialogflow
+
