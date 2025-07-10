@@ -42,6 +42,19 @@ pip install "fastapi[all]"
 pip install -r backend/requirements.txt
 
 ---
+---
+
+## 🗂️ Dialogflow Assets
+
+The `dialogflow_assets/` folder contains a `training_phrases.txt` file, which includes example utterances used to train the chatbot in Dialogflow.
+
+This file lists sample user queries for intents such as:
+- Adding to order
+- Removing from order
+- Tracking an order
+- Completing an order
+
+> Note: If you wish to re-create the Dialogflow agent, you can manually use these training phrases to configure intents inside Dialogflow console.
 
 ##  Run FastAPI Backend Server
 
