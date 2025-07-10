@@ -47,7 +47,7 @@ ngrok http 8000
 
 - Ngrok creates a temporary tunnel. If your terminal closes or you see a “session expired” message, you’ll need to restart ngrok.
 - After restarting ngrok, update the webhook URL in Dialogflow Fulfillment with the new HTTPS URL.
-- The backend is not live permanently. A frontend demo is available here: https://chatpaata.netlify.app
+- The backend is not live permanently. A frontend demo is available here:https://chatpaata.netlify.app/
 
 ---
 
