@@ -42,19 +42,25 @@ pip install "fastapi[all]"
 pip install -r backend/requirements.txt
 
 ---
----
 
-## 🗂️ Dialogflow Assets
 
-The `dialogflow_assets/` folder contains a `training_phrases.txt` file, which includes example utterances used to train the chatbot in Dialogflow.
+## 🗂️ Dialogflow Agent
 
-This file lists sample user queries for intents such as:
-- Adding to order
-- Removing from order
-- Tracking an order
-- Completing an order
+The `dialogflow_assets/` folder contains:
 
-> Note: If you wish to re-create the Dialogflow agent, you can manually use these training phrases to configure intents inside Dialogflow console.
+- `training_phrases.txt`: Sample training queries for different user intents
+- `dialogflow_agent.zip`: A full export of the Dialogflow agent
+
+### 🔁 How to Import Agent into Dialogflow
+
+1. Go to [Dialogflow Console](https://dialogflow.cloud.google.com/)
+2. Click on ⚙ **Settings** of your agent
+3. Go to the **Export and Import** tab
+4. Click **"Restore from ZIP"**
+5. Upload `dialogflow_agent.zip` from this repo
+
+This will restore all your intents, entities, and training data.
+
 
 ##  Run FastAPI Backend Server
 
