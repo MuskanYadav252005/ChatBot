@@ -21,20 +21,9 @@ This project implements a food ordering chatbot backend using FastAPI, connected
   - `complete_order`: Confirms and stores an order.
   - `track_order`: Provides status of a placed order.
 
----
-
-## Requirements
-
-- Python 3.8+
-- MySQL (optional for full DB functionality)
-- Install dependencies:
 
 
 
-1. Clone the Repository
-
-git clone https://github.com/MuskanYadav252005/ChatBot
-cd ChatBot/backend
 
 
 
